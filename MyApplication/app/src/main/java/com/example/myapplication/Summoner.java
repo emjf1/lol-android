@@ -47,28 +47,20 @@ public class Summoner {
 
     public void setLevel(int level){this.level = level;}
 
+    private boolean error = false;
+
+    public boolean getError(){
+        return error;
+    }
+
 
     private String json_string;
 
     public Summoner(String nombre){
         final String url = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + nombre + "?api_key=" + apiKey;
-        StringBuilder content = new StringBuilder();
-
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                json_string = conseguirString(url);
-            }
-        };
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         try {
+            json_string = new DownLoadStringToJSONTask(url).json_string;
             ponerAtributos(new JSONObject(json_string));
         } catch (JSONException exception) {
             System.out.println("Fallo lectura: " + exception.getMessage());
@@ -77,12 +69,16 @@ public class Summoner {
     }
 
     private void ponerAtributos(JSONObject obj) throws JSONException{
-        profileIconId = obj.getInt("profileIconId");
-        name = obj.getString("name");
-        level = obj.getInt("summonerLevel");
-        revisionDate = obj.getLong("revisionDate");
-        id = obj.getString("id");
-        accountId = obj.getString("accountId");
+        if(obj.isNull("status_code")){
+            profileIconId = obj.getInt("profileIconId");
+            name = obj.getString("name");
+            level = obj.getInt("summonerLevel");
+            revisionDate = obj.getLong("revisionDate");
+            id = obj.getString("id");
+            accountId = obj.getString("accountId");
+        }else{
+            error = true;
+        }
     }
 
     private String conseguirString(String urlQ) {

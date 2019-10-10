@@ -23,61 +23,52 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*Summoner summonerEnrike9 = new Summoner("enrike9");
-        TextView level = (TextView) findViewById(R.id.LevelUser);
-        level.setText("Level: " + Integer.toString(summonerEnrike9.getLevel()));
-        TextView name = findViewById(R.id.NameUser);
-        name.setText(summonerEnrike9.getName());*/
-        TextView level = (TextView) findViewById(R.id.LevelUser);
-        level.setText("Level: 0");
-        TextView name = findViewById(R.id.NameUser);
-        name.setText("");
+        inicializar();
         Button buscarUser = (Button) findViewById(R.id.BuscarUser);
         buscarUser.setOnClickListener(buscar);
     }
 
-    private Bitmap imagenInvocador = null;
-
     private View.OnClickListener buscar = new View.OnClickListener(){
         public void onClick(View v) {
-            EditText user = (EditText) findViewById(R.id.IntroducirInvocador);
-            Summoner summoner = new Summoner(user.getText().toString());
-            TextView level = (TextView) findViewById(R.id.LevelUser);
-            level.setText("Level: " + Integer.toString(summoner.getLevel()));
-            TextView name = findViewById(R.id.NameUser);
-            name.setText(summoner.getName());
-            final ImageView imagen = (ImageView) findViewById(R.id.ImagenInvocador);
-            final String urlImage = "http://ddragon.leagueoflegends.com/cdn/9.20.1/img/profileicon/" +  summoner.getProfileIconId() + ".png";
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    imagenInvocador = conseguirImagen(urlImage);
-                }
-            };
-            thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            Summoner summoner = encontrarSummoner();
+            if(summoner != null){
+                System.out.println("No soy nulo");
+                nivelYNombre(summoner);
+                imagenInvocador(summoner);
             }
-            imagen.setImageBitmap(imagenInvocador);
+            System.out.println("Soy nulo");
         }
     };
 
-    private Bitmap conseguirImagen(String urlImage){
-        try {
-            URL url = new URL(urlImage);
-            URLConnection urlConnection = url.openConnection();
-
-            InputStream is = url.openStream();
-            return BitmapFactory.decodeStream(is);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
+    private Summoner encontrarSummoner(){
+        EditText user = (EditText) findViewById(R.id.IntroducirInvocador);
+        Summoner summoner = new Summoner(user.getText().toString());
+        if (summoner.getError()){
+            inicializar();
+            return null;
         }
-        return null;
+        return summoner;
     }
 
+    private void imagenInvocador(Summoner summoner){
+        final ImageView imagen = (ImageView) findViewById(R.id.ImagenInvocador);
+        final String urlImage = "http://ddragon.leagueoflegends.com/cdn/9.20.1/img/profileicon/" +  summoner.getProfileIconId() + ".png";
+        DownLoadImageTask dit = new DownLoadImageTask(imagen);
+        dit.execute(urlImage);
+    }
 
+    private void nivelYNombre(Summoner summoner){
+        TextView level = (TextView) findViewById(R.id.LevelUser);
+        level.setText("Level: " + Integer.toString(summoner.getLevel()));
+        TextView name = findViewById(R.id.NameUser);
+        name.setText(summoner.getName());
+    }
+
+    private void inicializar(){
+        TextView level = (TextView) findViewById(R.id.LevelUser);
+        level.setText("Level: 0");
+        TextView name = findViewById(R.id.NameUser);
+        name.setText("");
+    }
 
 }

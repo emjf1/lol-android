@@ -4,7 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -23,29 +25,19 @@ public class DownLoadImageTask extends AsyncTask<String,Void, Bitmap> {
             Override this method to perform a computation on a background thread.
      */
     protected Bitmap doInBackground(String...urls){
-        String urlOfImage = urls[0];
-        Bitmap logo = null;
-        try{
-            URL url = new URL(urlOfImage);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            //conn.setDoInput(true);
-            //conn.connect();
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
-            conn.setInstanceFollowRedirects(true);
+        try {
+            URL url = new URL(urls[0]);
+            URLConnection urlConnection = url.openConnection();
 
-            InputStream is = conn.getInputStream();
-            logo = BitmapFactory.decodeStream(is);
-        }catch(Exception e){ // Catch the download exception
+            InputStream is = url.openStream();
+            return BitmapFactory.decodeStream(is);
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
             e.printStackTrace();
         }
-        return logo;
+        return null;
     }
 
-    /*
-        onPostExecute(Result result)
-            Runs on the UI thread after doInBackground(Params...).
-     */
     protected void onPostExecute(Bitmap result){
         imageView.setImageBitmap(result);
     }
