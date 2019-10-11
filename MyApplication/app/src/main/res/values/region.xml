@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="regionPublico">
+        <item>BR</item>
+        <item>EUW</item>
+        <item>EUNE</item>
+        <item>JP</item>
+        <item>KR</item>
+        <item>LAN</item>
+        <item>LAS</item>
+        <item>NA</item>
+        <item>OCE</item>
+        <item>TR</item>
+        <item>RU</item>
+        <item>PBE</item>
+    </string-array>
+</resources>

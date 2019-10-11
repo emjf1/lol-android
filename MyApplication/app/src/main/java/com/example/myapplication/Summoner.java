@@ -21,6 +21,7 @@ import java.util.Scanner;
 
 public class Summoner {
 
+    private Global global = new Global();
     private String id;
     private String accountId;
     private String puuid;
@@ -28,40 +29,45 @@ public class Summoner {
     private long revisionDate;
     private String name;
     private int level;
-    private Bitmap imagenInvocador;
-    final private String apiKey = "RGAPI-c005b8c1-0ac5-4e84-b7ae-e511568dc4e4";
+    private boolean error = false;
+    final private String apiKey = "RGAPI-b0f9ae04-cc81-4048-ab4e-b8d29c056526";
 
     public String getId(){return id;}
 
     public void setId(String id){this.id = id;}
 
-    public int getProfileIconId(){return profileIconId;}
+    public String getAccountId(){return accountId;}
 
-    public Bitmap getImagenInvocador(){return imagenInvocador;}
+    public void setAccountId(String accountId){this.accountId = accountId;}
+
+    public String getPuuid(){return puuid;}
+
+    public void setPuuid(String puuid){this.puuid = puuid;}
+
+    public long getRevisionDate(){return revisionDate;}
+
+    public void setRevisionDate(long revisionDate){this.revisionDate = revisionDate;}
 
     public String getName(){return name;}
 
     public void setName(String name){this.name = name;}
 
+    public int getProfileIconId(){return profileIconId;}
+
     public int getLevel(){return level;}
 
     public void setLevel(int level){this.level = level;}
 
-    private boolean error = false;
+    public boolean getError(){ return error;}
 
-    public boolean getError(){
-        return error;
-    }
+    public void setError(boolean error){this.error = error;}
 
-
-    private String json_string;
-
-    public Summoner(String nombre){
-        final String url = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + nombre + "?api_key=" + apiKey;
+    public Summoner(String nombre, String server){
+        String prueba = global.regionesCodigo[global.devolverPosicion(server)];
+        final String url = "https://" + global.regionesCodigo[global.devolverPosicion(server)] + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + nombre + "?api_key=" + apiKey;
 
         try {
-            json_string = new DownLoadStringToJSONTask(url).json_string;
-            ponerAtributos(new JSONObject(json_string));
+            ponerAtributos(new JSONObject(new DownLoadStringToJSONTask(url).json_string));
         } catch (JSONException exception) {
             System.out.println("Fallo lectura: " + exception.getMessage());
         }
@@ -80,39 +86,4 @@ public class Summoner {
             error = true;
         }
     }
-
-    private String conseguirString(String urlQ) {
-        StringBuilder content = new StringBuilder();
-
-        // many of these calls can throw exceptions, so i've just
-        // wrapped them all in one try/catch statement.
-        try
-        {
-            // create a url object
-            URL url = new URL(urlQ);
-
-            // create a urlconnection object
-            URLConnection urlConnection = url.openConnection();
-            InputStream inputStream = urlConnection.getInputStream();
-
-            // wrap the urlconnection in a bufferedreader
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-
-            // read from the urlconnection via the bufferedreader
-            while ((line = bufferedReader.readLine()) != null)
-            {
-                content.append(line + "\n");
-            }
-            bufferedReader.close();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return content.toString();
-    }
-
-
 }

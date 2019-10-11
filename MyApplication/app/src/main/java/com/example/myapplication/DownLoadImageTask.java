@@ -20,10 +20,6 @@ public class DownLoadImageTask extends AsyncTask<String,Void, Bitmap> {
         this.imageView = imageView;
     }
 
-    /*
-        doInBackground(Params... params)
-            Override this method to perform a computation on a background thread.
-     */
     protected Bitmap doInBackground(String...urls){
         try {
             URL url = new URL(urls[0]);

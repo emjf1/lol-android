@@ -7,10 +7,16 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -18,6 +24,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity {
+
+    public final Global global = new Global();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +40,17 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Summoner summoner = encontrarSummoner();
             if(summoner != null){
-                System.out.println("No soy nulo");
                 nivelYNombre(summoner);
                 imagenInvocador(summoner);
             }
-            System.out.println("Soy nulo");
         }
     };
 
     private Summoner encontrarSummoner(){
         EditText user = (EditText) findViewById(R.id.IntroducirInvocador);
-        Summoner summoner = new Summoner(user.getText().toString());
+        Spinner spinner = (Spinner) findViewById(R.id.Region);
+        String hola = spinner.getSelectedItem().toString();
+        Summoner summoner = new Summoner(user.getText().toString(), spinner.getSelectedItem().toString());
         if (summoner.getError()){
             inicializar();
             return null;
@@ -52,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void imagenInvocador(Summoner summoner){
         final ImageView imagen = (ImageView) findViewById(R.id.ImagenInvocador);
-        final String urlImage = "http://ddragon.leagueoflegends.com/cdn/9.20.1/img/profileicon/" +  summoner.getProfileIconId() + ".png";
+        final String urlImage = "http://ddragon.leagueoflegends.com/cdn/" + global.versionFinal + "/img/profileicon/" +  summoner.getProfileIconId() + ".png";
         DownLoadImageTask dit = new DownLoadImageTask(imagen);
         dit.execute(urlImage);
     }
@@ -69,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
         level.setText("Level: 0");
         TextView name = findViewById(R.id.NameUser);
         name.setText("");
+        // Configuración Spinner
+        Spinner region = (Spinner) findViewById(R.id.Region);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.regionPublico, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        region.setAdapter(adapter);
     }
 
 }
